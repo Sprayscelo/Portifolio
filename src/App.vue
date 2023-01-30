@@ -1,26 +1,49 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app">
+    <homePage/>
+    <transition name="fade"> 
+      <router-view></router-view>
+    </transition>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  import homePage from '@/components/homePage.vue'
+  import { onMounted } from 'vue';
+  
+  export default {
+    name: 'app',
+    data() {
+      return {
+        transform: false
+      }
+    },
+    components: {
+      homePage,
+    },
+    setup() {
+      onMounted(() => {
+        this.transform = true
+      }) 
+    }
   }
-}
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style lang="scss">
+body {
+  margin: 0;
 }
+
+.fade-enter-active, .fade-leave-active {
+  transition: transform .5s;
+}
+
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  transform: translateX(100%);
+  transition: all .5s;
+}
+
+// .fade-enter, .fade-leave-to {
+//   transform: translateX(-100%);
+// }
 </style>
