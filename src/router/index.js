@@ -9,8 +9,8 @@ const routes = [
     component: sobre
   },
   {
-    path: '/habilidadesMe',
-    name: 'hablidades',
+    path: '/habilidades',
+    name: 'habilidades',
     component: habilidades
   },
   {

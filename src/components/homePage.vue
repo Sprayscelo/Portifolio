@@ -5,9 +5,9 @@
       <div>
         <ul>
           <li> <router-link to="/"> Sobre mim </router-link> </li>
-          <li> <router-link to="/habilidadesMe"> Habilidades </router-link>  </li>
-          <li> <router-link to="#"> Experiencias </router-link> </li>
-          <li> <router-link to="#"> Projetos </router-link> </li>
+          <li> <router-link to="/habilidades"> Habilidades </router-link>  </li>
+          <li> <router-link to="/experiencias"> Experiencias </router-link> </li>
+          <li> <router-link to="/projetos"> Projetos </router-link> </li>
         </ul>
       </div>
     </div>
@@ -64,7 +64,7 @@ export default {
         position: relative;
         padding-bottom: 2px;
         }
-        li::before {
+        li::before, li:has(a.router-link-active)::before {
           content: "";
           background-color: white;
           width: 0%;
@@ -74,7 +74,7 @@ export default {
           position: absolute;
           transform: translate(50%);
         }
-        li:hover::before
+        li:hover::before, li:has(a.router-link-active)::before
         {
           text-align: center;
           width: 100%;
