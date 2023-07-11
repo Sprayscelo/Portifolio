@@ -34,7 +34,8 @@
 
 <script>
 export default {
-  name: 'sobre-mim'
+  name: 'sobre-mim',
+
 }
 </script>
 
