@@ -1,24 +1,7 @@
-# weatherapp
+# Portifolio
 
-## Project setup
-```
-npm install
-```
+The portifolio still in progress, all the projects will be shown in the route "Projects"
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+This project uses VueJs, Nodejs, Nodemon and some other libraries...
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+I will do the properly documentation soon!
