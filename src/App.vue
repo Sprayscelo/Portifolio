@@ -36,7 +36,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500&family=Lato:ital,wght@1,300&family=Montserrat:wght@300&family=Quicksand:wght@500&family=Roboto:wght@500;700&display=swap');
       
 body {
-  background-color: $outlineHeader;
+  background: hsla(233, 100%, 90%, 1);
+
+  background: linear-gradient(180deg, hsla(233, 100%, 90%, 1) 0%, hsla(0, 0%, 89%, 1) 100%);
+
+  background: -moz-linear-gradient(180deg, hsla(233, 100%, 90%, 1) 0%, hsla(0, 0%, 89%, 1) 100%);
+
+  background: -webkit-linear-gradient(180deg, hsla(233, 100%, 90%, 1) 0%, hsla(0, 0%, 89%, 1) 100%);
+  
+  border-radius: 15px;
+
+  //background-color: $outlineHeader;
   font-family: 'Montserrat', sans-serif;
   margin: 0;
 }

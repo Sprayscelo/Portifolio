@@ -1,29 +1,30 @@
 <template>
   <div id="gamesConfigRoot">
-    <div class="gamesConfigRoot">
+    <div id="tittleContainer">
       <h3>Game selection</h3>
+      <slot id="removeGame"></slot>
     </div>
-    <div>
-      <p> Plase select a game </p>
-      <dropdown class="dropdown" @clicked="gameSelected" :arrayList="gamesFounded" searchKey="name">
-        <input type="text" v-model="gameSearched" placeholder="Type a game name...">
-      </dropdown>
-      <br>
-      <!-- <div>
-        <div v-if="this.gamesFounded">
-          <div v-for="games in this.gamesFounded" :key="games.name">
-            <img :src="games.url ? games.url : noUrlFounded" alt="">
-            <span> {{ games.name }} </span>
+    <div class="gamesConfigContainer">
+      <div>
+        <p> Plase select a game </p>
+        <div class="selectButtonRoot">
+          <input required type="text" v-model="gameSearched" placeholder="Type a game name..." id="gameSearchedInput">
+          <div v-if="gamesFounded.length > 1" :class="`dropDownButtonContainer ${dropTransition ? 'dropAnimation' : ''}`">
+              <ul v-for="item in gamesFounded" :key="item.id" ref="configs">
+                  <img @load="spinner = false" v-if="item.url" :src="item.url" alt="">
+                  <img v-else :src="noUrlImage" alt="">
+                  <li @click="selectGame(item.name)">  {{item.name}} </li>
+              </ul>
           </div>
         </div>
-      </div> -->
+      </div>
       <div>
-        <p>Please select any game</p>
-        <input type="text" v-model="gameFps">
+        <p>How much fps you want to run?</p>
+        <input required type="number" v-model="gameFps" placeholder="FPS quantity">
       </div>
       <div>
         <p>Please select the quality</p>
-        <select value="Teste">
+        <select v-model="gameQuality">
           <option name="Low" id="Low" value="Low"> Low </option>
           <option name="Medium" id="Medium" value="Medium"> Medium </option>
           <option name="High" id="High" value="High"> High </option>
@@ -37,7 +38,6 @@
 <script>
 import axios from "axios";
 import nourl from '@/static/no_url_founded.jpeg'
-import dropdown from '@/components/utilities/dropdown.vue'
 
 export default {
   name: "gamesConfig",
@@ -46,22 +46,15 @@ export default {
       gameSearched: "",
       gamesFounded: "",
       gameFps: "",
-      gameQuality: "",
+      gameQuality: "Low",
       noUrlFounded: nourl,
-      pcConfig: {
-        processor: '',
-        ram: '',
-        videoCard:''
-
-      }
     };
   },
   components: {
-    dropdown
+    
   },
   methods: {
     async searchGames(endpoint, query) {
-      console.log(query);
       //Always send the same header for this call, dont need to put on the parameter when calling.
       try {
         const response = await axios.post(
@@ -75,15 +68,27 @@ export default {
         throw error;
       }
     },
-    gameSelected(game) {
+    selectGame(game) {
       this.gameSearched = game
-      console.log(game)
+      this.gamesFounded = ''
+    },
+    getData() {
+      return {
+        "gameSearched": this.gameSearched,
+        "gameFps": this.gameFps,
+        "gameQuality": this.gameQuality
+      }
+    },
+    clearCard() {
+      this.gameSearched = ''
+      this.gameFps = ''
+      this.gameQuality = 'Low'
     }
   },
   watch: {
     gameSearched(nv) {
       clearTimeout(this.timeout);
-      if(!nv) return this.gamesFounded = ''
+      if(!nv) return 
 
       this.timeout = setTimeout(async () => {
         try {
@@ -113,30 +118,131 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style scoped lang="scss" name="card-styles">
+
+@import '@/static/variables.scss';
+
   #gamesConfigRoot {
-    position: relative;
     background-color: white;
     border-radius: 10px;
     border: 2px solid hsl(0, 0%, 0%, 30%);
     background: linear-gradient(180deg, hsla(186, 33%, 94%, 1) 0%, hsla(216, 41%, 79%, 1) 100%);
+    h3 {
+      display: inline-block;
+      margin: 0px;
+      margin-bottom: .5em;
+      text-align: center;
+    }
+    .gamesConfigContainer {
+      position: relative;
+      p {
+        margin-top: 0px;
+        margin-bottom: 7px;
+      }
+      > div {
+        position: relative;
+        margin-bottom: 1em;
+        input {
+          position: relative;
+          color: black;
+          border-radius: 5px ;
+          border: solid 1px gray;
+          text-indent: 3px;
+          height: 1.2rem;
+          font-family: 'Montserrat', sans-serif;
+          font-weight: bold;
+          padding: 5px;
+          width: 96%;
+        }
+        input:hover {
+          outline: none;
+          box-shadow: 15px 0px 15px -10px;
+          transition: all 0.2s ease-in;
+        }
+      }
+      select {
+        border-radius: 5px;
+        padding: 3px;
+        text-align: center;
+        border: 1px solid black;
+      }
+    }
   }
 
-  input {
-    color: black;
-    border-radius: 5px ;
-    border: solid 1px gray;
-    text-indent: 3px;
-    height: 1.2rem;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: bold;
-    padding: 5px;
-    width: 90%;
+  #tittleContainer {
+    display: grid;
+    grid-template-columns: 1fr 25px;
+    place-items: center;
+    gap: 10px;
+  }
+</style>
+
+<style scoped lang="scss" name="dropdown-styles">
+.dropAnimation {
+  animation: dropdown 1s ease-in-out none;
 }
-  input:focus {
-      outline: none;
-      box-shadow: 0px 0px 3px 0px;
-      transition: all 0.2s ease-in;
+  .selectButtonRoot {
+      position: relative;
+      .dropDownButtonContainer{
+          display: flex;
+          flex-direction: column;
+          position: absolute;
+          width: 100%;
+          max-height: 155px;
+          overflow-y: auto;
+          overflow-x: hidden;
+          background-color: whitesmoke;
+          border-radius: 5px;
+          z-index: 1;
+      }
+      
+      @keyframes dropdown {
+          0% {
+              height: 0px;
+          }
+          100% {
+              height: min-content;
+          }
+      }
+      ul {
+          display: flex;
+          justify-content: flex-start;
+          gap: 5px;
+          list-style: none;
+          padding: 0px 5px 0px 0px;
+          margin: 0;
+          text-align: center;
+          img {
+              display: inline-block;
+              width: 15px;
+              height: 15px;
+              flex-grow: 0;
+              align-self: center;
+              margin-left: 10px;
+          }
+          li {
+              position: relative;
+              color: black;
+              text-indent: 3px;
+              font-family: 'Montserrat', sans-serif;
+              font-weight: bold;
+              padding: 5px;
+              width: 100%;
+              cursor: pointer;
+          }
+          li:hover {
+            background-color: #8EB1C7;
+            transition: all .1s ease-in-out;
+          }
+      }
   }
 
+  .dropDownButtonContainer::-webkit-scrollbar {
+      width: 6px;
+  }
+
+  .dropDownButtonContainer::-webkit-scrollbar-thumb {
+      background-color: rgb(140, 210, 228);
+      border-radius: 5px;
+  }
 </style>

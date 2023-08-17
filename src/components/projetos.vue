@@ -97,7 +97,6 @@ export default {
   display: grid;
   place-items: center;
   position: absolute;
-  width: 100vw;
   height: 90vh;
 }
 
