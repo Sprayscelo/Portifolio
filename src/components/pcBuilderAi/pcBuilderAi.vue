@@ -3,19 +3,19 @@
     <div class="pcBuilderAiMainContainer backgroundContainer">
       <h1 class="center">Welcome to pc builder AI</h1>
       <h2>Please select the games, quality and how much fps you want to run!</h2>
+      <div v-if="pcConfig.length > 1" class="pagination">
+        <span @click="this.page = index-1" v-for="index in pcConfig.length" :key="index" :class="[this.page === index-1 ? 'pageActive' : '', !loadingPc ? `opacityPcSpecs` : ``]">{{index}}</span>
+      </div>
       <div class="pcSpecsContainer">
-        <img id="pcBuilderLogo" src="@/static/pc_builder_logo.png" alt="">
+        <div id="pcBuilderLogo">
+          <img id="" :src="loadingPc ? loadingPcLogo : pcBuilderLogo" :class="loadingPc ? `loadingPc` : `imgLogoBuilder`" alt="">
+          <p v-if="loadingPc" class="">Generating PC for you, please wait...</p>
+        </div>
         <ul>
-          <li>Processor: <span :class="pcConfig.processor ? 'spanShow' : ''"> {{ pcConfig.processor}} </span></li>
-          <li>RAM memory: <span :class="pcConfig.ram ? 'spanShow' : ''"> {{pcConfig.ram}} </span></li>
-          <li>Video card: <span :class="pcConfig.videoCard ? 'spanShow' : ''"> {{pcConfig.videoCard}} </span></li>
-          <li>Powersupply: <span :class="pcConfig.powerSupply ? 'spanShow' : ''"> {{pcConfig.powerSupply}} </span></li>
-          <li>Motherboard: <span :class="pcConfig.motherboard ? 'spanShow' : ''">  {{pcConfig.motherboard}} </span></li>
-          <li>
-            Obs: <span :class="pcConfig.obs ? 'spanShow' : ''"> {{ pcConfig.obs }} </span>
-          </li>
+          <li v-for="pc, key in pcConfig[this.page]" :key="key"><span>{{pc.label ?? pc}}</span> <span :class="[loadingPc ? 'opacityControl' : '', pc.label ?? false ? `animationPcSpecs` : ``]"> {{pc.value ?? '. . .'}} </span> </li>
         </ul>
       </div>
+      <h3 v-if="pcConfig.length > 1"> You have <span id="pcNumbers"> {{ pcConfig.length }} </span> options </h3>
       <div class="configContainer">
         <div class="gameConfigContainer">
           <gamesConfig v-for="game in games" :key="game.id" ref="configs">
@@ -42,10 +42,10 @@
           </button>
         </div>
         <div class="buttonsContainer">
-          <button v-if="!this.pcConfig.processor" @click=generatePc() class="generatePcButton">
+          <button v-if="!this.pcConfig[0].processor ?? false" @click=generatePc() class="generatePcButton">
             Generate PC!
           </button>
-          <button @click="clear()" v-if="this.pcConfig.processor" class="generatePcButton">Generate new PC!</button>
+          <button @click="clear()" v-if="this.pcConfig[0].processor" class="generatePcButton">Generate new PC!</button>
         </div>
       </div>
     </div>
@@ -53,6 +53,9 @@
 </template>
 
 <script>
+import pcBuilderLogo from '@/static/pc_builder_logo.png'
+import loadingPcLogo from '@/static/loadingPc.jpg'
+
 // import CryptoJS from 'crypto-js';
 import axios from "axios";
 // import moment from "moment";
@@ -67,14 +70,13 @@ export default {
       tokenExpireTime: null,
       lastRequest: null,
       games: [{id: 0}],
-      pcConfig: {
-        processor: '',
-        ram: '',
-        videoCard:'',
-        powerSupply: '',
-        motherboard: '',
-        obs: ''
-      }
+      pcConfig: [
+            ['Processor: ', 'Ram Memory: ', 'Video card: ', 'Power Supply: ', 'Motherboard: ', 'Obs: '],
+        ],
+      page: 0,
+      loadingPc: false,
+      loadingPcLogo: loadingPcLogo,
+      pcBuilderLogo: pcBuilderLogo
     };
   },
   components: {
@@ -95,35 +97,79 @@ export default {
       this.games.push({id:this.games.length})
     },
 
-    generatePc() {
+    async generatePc() {
       let gamesCardsInfos = this.$refs.configs.map((config) => config.getData()).filter(card => card.gameSearched && card.gameFps && card.gameQuality)
       
       if(!gamesCardsInfos.length) return alert(`Please fill up at least one card information`)
-      
-      this.pcConfig.processor = ' i9 9900k 3.8 Ghz'
-      this.pcConfig.ram = ' 16gb RAM'
-      this.pcConfig.videoCard = ' GTX 3070 TI'
-      this.pcConfig.powerSupply = ' 800W'
-      this.pcConfig.motherboard = ' Placa mãe de teste'
-      this.pcConfig.obs = ' Esse é o PC de teste para exibir as informações!!'
+      this.pcConfig = [
+        ['Processor: ', 'Ram Memory: ', 'Video card: ', 'Power Supply: ', 'Motherboard: ', 'Obs: ']
+      ]
+      this.loadingPc = true
+      const responsePcConfigAi = await axios.post('http://localhost:3000/openai', {"gamesConfig": gamesCardsInfos})
+      this.loadingPc = false
+            
+      this.pcConfig = JSON.parse(responsePcConfigAi.data.message.content).pcConfig.map(pc => {
+        pc.processor = {label: `Processor: `, value: pc.processor},
+        pc.ram = {label: `Ram memory: `, value: pc.ram},
+        pc.videoCard = {label: `Video card: `, value: pc.videoCard},
+        pc.powerSupply = {label: `Power Supply: `, value: pc.powerSupply},
+        pc.motherboard = {label: `Motherboard: `, value: pc.motherboard},
+        pc.obs = {label: `Obs: `, value: pc.obs ? pc.obs : '. . .'}
+        return pc
+      })
     },
 
     removeGame(id) {
       this.games = this.games.filter(game => game.id != id)
     },
-
-    clear() {
-      for(let key of Object.keys(this.pcConfig)) {
-        this.pcConfig[key] = ''
-      }
-      this.$refs.configs.map((config) => config.clearCard())
-    }
   },
 };
 </script>
+<style scoped lang="scss" name="animations"> 
 
+.opacityControl {
+  animation: opc 2s infinite;
+}
+
+.animationPcSpecs {
+  animation: opacityPcSpecs 1s ease-in-out;
+}
+
+@keyframes opacityPcSpecs {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes opc {
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .3;
+  }
+}
+
+@keyframes scaleAndFade  {
+  100% {
+    transform: scale(0.9);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+}
+
+.loadingPc {
+  animation: scaleAndFade 2s infinite;
+}
+</style>
 <style scoped lang="scss">
-
+@import '@/static/variables.scss';
 .backgroundContainer{
   background: hsla(233, 100%, 90%, 1);
 
@@ -146,20 +192,8 @@ export default {
     font-size: 1.1rem;
   }
 
-@keyframes onload {
-  0% {
-    opacity: 0;
-    perspective: 1000px;
-  }
-
-  100% {
-    opacity: 1;
-    perspective: none;
-  }
-}
-
 .add-button {
-  background: linear-gradient(180deg, hsla(186, 33%, 94%, 1) 0%, hsla(216, 41%, 79%, 1) 100%);
+  background: white;
   border: 2px solid hsl(0, 0%, 0%, 30%);
   border-radius: 5px;
   padding: 12px;
@@ -179,13 +213,31 @@ export default {
   stroke: hsl(0, 0%, 0%, 30%);
 }
 
+.pagination {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 2em;
+  span{
+    background-color: $background;
+    border-radius: 12px;
+    width: 15px;
+    padding: 10px;
+    text-align: center;
+  }
+  span:hover, .pageActive{
+    background-color: black;
+    color: whitesmoke;
+    transition: .3s;
+  }
+}
 .pcSpecsContainer {
   display: flex;
   gap: 30px;
   margin-bottom: 2em;
   flex-shrink: 1;
   font-size: 1rem;
-  font-weight: bold;
   height: 35vh;
   width: 95vw;
   p{
@@ -205,42 +257,57 @@ export default {
       display: flex;
       align-items: center;
       flex-grow: 1;
-      flex-basis: 1;
       min-height: 20px;
-      font-weight: bolder;
-      span {
-        margin-left: .3em;
-        opacity: 0;
-      }
-      .spanShow{
-        opacity: 1;
-        transition: all 1s ease-out;
-      }
     }
-  }
+    span:first-child {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    span:nth-child(2) {
+      font-size: .9em;
+    }
+  } 
+}
+h3{
+  text-align: center;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-size: large;
 }
 #pcBuilderLogo {
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  flex-shrink: 1;
+  gap: 10px;
+  text-align: center;
   background-color: white;
   border-radius: 10px;
   padding: 5px;
-  min-width: 250px;
-  width: 40%;
-  height: 100%;
+  width: 30%;
+  min-width: fit-content;
+  justify-content: center;
+  align-items: center;
+  img.imgLogoBuilder {
+    min-width: 250px;
+    width: 100%;
+    height: 100%;
+  }
+  img.loadingPc {
+    height: 85%;
+    width: 85%;
+    border-radius: 10px;
+    transform: scale(0.9);
+  }
+  p{
+    font-size: .7rem;
+    animation: opc 2s infinite;
+  }
 }
 
 #pcBuilderAiRoot{
   margin: 20px;
 }
-//.pcBuilderLogoContainer {
-//    margin-top: 17px;
-//    min-width: 30%;
-//    flex-basis: minmax(30%, 50%);
-//    background-color: whitesmoke;
-//    border-radius: 10px;
-//    
-//  }
-
   .gameConfigContainer {
     display: flex;
     //grid-template-columns: repeat(4, minmax(10%, 1fr));

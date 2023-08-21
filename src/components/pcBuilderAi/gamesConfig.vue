@@ -117,16 +117,15 @@ export default {
   },
 };
 </script>
-
 <style scoped lang="scss" name="card-styles">
-
 @import '@/static/variables.scss';
 
   #gamesConfigRoot {
-    background-color: white;
+    background-color: black;
     border-radius: 10px;
     border: 2px solid hsl(0, 0%, 0%, 30%);
-    background: linear-gradient(180deg, hsla(186, 33%, 94%, 1) 0%, hsla(216, 41%, 79%, 1) 100%);
+    background: whitesmoke;
+    font-weight: 500;
     h3 {
       display: inline-block;
       margin: 0px;
@@ -136,6 +135,7 @@ export default {
     .gamesConfigContainer {
       position: relative;
       p {
+        font-size: .9em;
         margin-top: 0px;
         margin-bottom: 7px;
       }
@@ -150,7 +150,6 @@ export default {
           text-indent: 3px;
           height: 1.2rem;
           font-family: 'Montserrat', sans-serif;
-          font-weight: bold;
           padding: 5px;
           width: 96%;
         }

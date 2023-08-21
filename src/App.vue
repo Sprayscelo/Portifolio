@@ -31,10 +31,10 @@
 </script>
 
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap');
+//@import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap');
 @import '@/static/variables.scss';
-@import url('https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500&family=Lato:ital,wght@1,300&family=Montserrat:wght@300&family=Quicksand:wght@500&family=Roboto:wght@500;700&display=swap');
-      
+//@import url('https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500&family=Lato:ital,wght@1,300&family=Montserrat:wght@300&family=Quicksand:wght@500&family=Roboto:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Nunito:ital,wght@0,700;0,1000;1,600;1,900&family=Quicksand:wght@700&family=Rubik+Mono+One&display=swap');
 body {
   background: hsla(233, 100%, 90%, 1);
 
@@ -49,6 +49,16 @@ body {
   //background-color: $outlineHeader;
   font-family: 'Montserrat', sans-serif;
   margin: 0;
+  overflow-x: hidden;
+}
+
+body::-webkit-scrollbar {
+  width: 5px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: $outlineHeader;
+  border-radius: 5px;
 }
 
 .fade-enter-active, .fade-leave-active {
