@@ -11,7 +11,7 @@ async function startServer() {
   const app = express();
   
   app.use(cors())
-  app.use(checkIp);
+  //app.use(checkIp);
   
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({extended: true}))
