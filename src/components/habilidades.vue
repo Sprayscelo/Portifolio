@@ -3,7 +3,7 @@
         <h1>Habilidades</h1>
         <section>
             <div class="linguagensContainer">
-                <div v-for="(linguagem, index) in this.linguagens" id="linguagens" :key="index" @click="this.linguagemSelecionada = linguagem, ativar($event)" >
+                <div v-for="(linguagem, index) in this.linguagens" id="linguagens" :key="index" @click="this.linguagemSelecionada = linguagem" >
                     <img :class="{active: linguagem.nome == this.linguagemSelecionada.nome}" :src="linguagem.logo" alt="">
                     <span class="tituloLinguagem">{{ linguagem.nome }}</span>
                 </div>
@@ -41,7 +41,7 @@
                     {
                         logo: require('@/assets/icons8-django-50.png'),
                         nome: 'Django',
-                        info: 'Aprendi muito deste framework durante o curso online realizado na "EDX" fornecido pela universidade de Harvard, alguns de meus projetos feito em Django podem ser visto neste portifólio, possuo aproximadamente 1 ano de experiencia com esta linguagem.'
+                        info: 'Aprendi muito deste framework durante o curso online realizado na "EDX" fornecido pela universidade de Harvard, alguns de meus projetos feito em Django podem ser visto no meu github, possuo aproximadamente 1 ano de experiencia com esta linguagem.'
                     },
                     {
                         logo: require('@/assets/icons8-python-50.png'),
@@ -61,7 +61,12 @@
                     {
                         logo: require('@/assets/icons8-github-50.png'),
                         nome: 'Github',
-                        info: ''
+                        info: 'Utilizo Github a aproximadamente 2 anos para fazer alguns projetos pessoais que podem ser visto no portifolio ou em meu github.'
+                    },
+                    {
+                        logo: require('@/assets/flutter.png'),
+                        nome: 'Flutter',
+                        info: 'Utilizei para realizar uma nova feature dentro da empresa no qual eu trabalhava, utilizei por aproximadamente 6 meses'
                     }
                 ],
                 linguagemSelecionada: '',
@@ -142,7 +147,7 @@
         margin-top: 0;
         font-size: 2rem;
         margin-bottom: 0px;
+        margin-top: 1rem;
         padding-bottom: 10px;
-        background-color: $outlineHeader;
     }
 </style>

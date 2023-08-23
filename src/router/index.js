@@ -2,7 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import sobre from '@/components/sobre.vue'
 import habilidades from '@/components/habilidades.vue'
 import projetos from '@/components/projetos.vue'
+import experiencias from '@/components/experiencias'
 import pcBuilderAi from '@/components/pcBuilderAi/pcBuilderAi.vue'
+import pcBUilderAiDoc from '@/components/pcBuilderAi/documentation.vue'
 
 const routes = [
   {
@@ -18,7 +20,7 @@ const routes = [
   {
     path: '/experiencias',
     name: 'experiencias',
-    // component: experiencias
+    component: experiencias
   },
   {
     path: '/projetos',
@@ -32,6 +34,18 @@ const routes = [
       }
     ]
   },
+  {
+    path: '/documentation',
+    name: 'documentation',
+    component: '',
+    children: [
+      {
+        path: 'pcBuilderAiDoc',
+        name: 'pcBuilderAiDoc',
+        component: pcBUilderAiDoc
+      }
+    ]
+  }
 ]
 
 const router = createRouter({

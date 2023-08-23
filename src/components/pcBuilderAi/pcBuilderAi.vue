@@ -260,7 +260,6 @@ export default {
       min-height: 20px;
     }
     span:first-child {
-      font-weight: bold;
       margin-right: 5px;
     }
     span:nth-child(2) {

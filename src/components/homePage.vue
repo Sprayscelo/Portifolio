@@ -53,6 +53,8 @@ export default {
     color: $headerLetterColor;
     height: 100%;
     border-bottom: 3px $outlineHeader solid;
+    word-wrap: normal;
+    white-space: nowrap;
       ul {
       display: flex;
       gap: 15px;

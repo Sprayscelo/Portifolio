@@ -1,82 +1,97 @@
 <template>
   <div id="projetosRoot">
-    <div id="projetosMain">
-      <section v-if="$route.path == '/projetos'">
-        <div class="cardsContainer">
-            <router-link :to="{name: card.path}" v-for="card, index in projetos" :key="card" class="cards">
-              <div :class="'cardStatus ' + getStatus(card.status)">
-                <span>{{ card.status }}</span>
-              </div>
-              <span>
-                  <strong> PROJECT {{ card.name ? card.name.toUpperCase() : index + 1 }} </strong>
-              </span>
-            </router-link>
-        </div>
-      </section>
-      <div>
-        <router-view>
-        </router-view>
-      </div>
+    <div id="projetosMain" v-if="$route.path === `/projetos`">
+      <cardProjects v-for="projeto, index in projetos" :key="index"
+        :image="projeto.image"
+        :link="projeto.link"
+        :path="projeto.path"
+        :name="projeto.name"
+        :description="projeto.description"
+        :status="projeto.status"
+        :documentation="projeto.documentation"
+        :platform="projeto.platform" class="cardProjects">
+      </cardProjects>
+    </div>
+    <div>
+    <router-view>
+      </router-view>
     </div>
   </div>
 </template>
 
 <script>
+import cardProjects from '@/components/utilities/cardsProjects.vue'
+import pcBuilderLogo from '@/static/pc_builder_logo_cut.png'
 
 export default {
   name: "meus-projetos",
   data() {
     return {
       projetos: [{
-        image: '',
+        image: pcBuilderLogo,
         link: '',
         path: 'pcBuilderAi',
         name: 'Pc Builder AI',
-        descricao: '',
-        status: 'In progress'
+        description: 'Select your games, FPS  and quality you want to run and the AI will generate the PC for you!',
+        status: 'In progress',
+        documentation: 'pcBuilderAiDoc',
+        platform: 'Web'
       },
       {
         image: '',
         link: '',
         path: '',
         name: '',
-        descricao: '',
-        status: 'Soon'
+        description: '',
+        status: 'Soon',
+        documentation: '',
+        platform: '',
       },
       {
         image: '',
         link: '',
         path: '',
         name: '',
-        descricao: '',
-        status: 'Soon'
+        description: '',
+        status: 'Soon',
+        documentation: '',
+        platform: ''
       },
       {
         image: '',
         link: '',
         path: '',
         name: '',
-        descricao: '',
-        status: 'Soon'
+        description: '',
+        status: 'Soon',
+        documentation: '',
+        platform: ''
       },
       {
         image: '',
         link: '',
         path: '',
         name: '',
-        descricao: '',
-        status: 'Soon'
+        description: '',
+        status: 'Soon',
+        documentation: '',
+        platform: ''
       },
       {
         image: '',
         link: '',
         path: '',
         name: '',
-        descricao: '',
-        status: 'Soon'
+        description: '',
+        status: 'Soon',
+        documentation: '',
+        platform: ''
       },
     ],
     };
+  },
+  components: {
+      cardProjects
   },
   methods: {
     getStatus(status) {
@@ -93,11 +108,25 @@ export default {
 <style scoped lang="scss">
 @import '@/static/variables.scss';
 
-#projetosMain {
-  display: grid;
+#projetosRoot {
+  display: flex;
   place-items: center;
-  position: absolute;
-  height: 90vh;
+  justify-content: center;
+  min-height: calc(100vh - 56px);
+}
+
+#projetosMain {
+  display: flex;  
+  justify-content: center;
+  place-items: center;
+  width: fit-content;
+  height: 100%;
+  border-radius: 15px;
+  padding: 1rem;
+  gap: 2rem;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  flex-basis: 33%;
 }
 
 a {
@@ -165,7 +194,6 @@ a {
       height: 15%;
       box-shadow: 0px 5px 10px -5px rgba(0, 0, 0, 0.5),
               0px -5px 10px -5px rgba(0, 0, 0, 0.5);
-      //background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgb(70, 71, 82) 0%, rgb(8, 11, 15) 90.3% );
       span {
         color: white;
         font-weight: bold;

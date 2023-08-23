@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <homePage/>
+    <homePage id="homePage"/>
       <router-view v-slot="{Component}">
         <transition name="fade">
           <component :is="Component" />
@@ -22,19 +22,17 @@
     components: {
       homePage,
     },
-    // setup() {
-    //   onMounted(() => {
-    //     this.transform = true
-    //   }) 
-    // }
   }
 </script>
 
 <style lang="scss">
-//@import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap');
 @import '@/static/variables.scss';
-//@import url('https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500&family=Lato:ital,wght@1,300&family=Montserrat:wght@300&family=Quicksand:wght@500&family=Roboto:wght@500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Nunito:ital,wght@0,700;0,1000;1,600;1,900&family=Quicksand:wght@700&family=Rubik+Mono+One&display=swap');
+#app {
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
 body {
   background: hsla(233, 100%, 90%, 1);
 
@@ -49,7 +47,6 @@ body {
   //background-color: $outlineHeader;
   font-family: 'Montserrat', sans-serif;
   margin: 0;
-  overflow-x: hidden;
 }
 
 body::-webkit-scrollbar {
@@ -69,7 +66,6 @@ body::-webkit-scrollbar-thumb {
 
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
-  transform: translateX(100%);
   transition: all 0.3s;
 }
 

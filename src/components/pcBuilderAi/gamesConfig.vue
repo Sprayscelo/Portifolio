@@ -224,7 +224,6 @@ export default {
               color: black;
               text-indent: 3px;
               font-family: 'Montserrat', sans-serif;
-              font-weight: bold;
               padding: 5px;
               width: 100%;
               cursor: pointer;
