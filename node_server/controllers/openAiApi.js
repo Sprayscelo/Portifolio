@@ -32,7 +32,6 @@ exports.generatePc = async (req, res) => {
           },
         }
       );
-    console.log(sendToChatGpt.data.choices[0]);
     res.json(sendToChatGpt.data.choices[0]);
   }catch(error) {
     console.log(error)

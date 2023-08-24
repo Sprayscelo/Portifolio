@@ -45,7 +45,7 @@
           <button v-if="!this.pcConfig[0].processor ?? false" @click=generatePc() class="generatePcButton">
             Generate PC!
           </button>
-          <button @click="clear()" v-if="this.pcConfig[0].processor" class="generatePcButton">Generate new PC!</button>
+          <button @click="generatePc()" v-if="this.pcConfig[0].processor" class="generatePcButton">Generate new PC!</button>
         </div>
       </div>
     </div>
