@@ -13,7 +13,7 @@ async function auth () {
 }
 
 async function checkToken() {
-  const tokenFilePath = path.join('', '../node_server/token.json');
+  const tokenFilePath = path.join('', '../token.json');
 
   let tokenGames = null;
 
