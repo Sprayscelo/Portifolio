@@ -1,9 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const gamesApi = require('../controllers/gamesApi')
-const artworksApi = require('../controllers/artworksApi')
+const gamesApi = require("../controllers/gamesApi");
+const artworksApi = require("../controllers/artworksApi");
 
-router.post('/games', gamesApi.getGames)
-router.post('/artworks', artworksApi.getScreenshots)
+router.post("/games", gamesApi.getGames);
+router.post("/artworks", artworksApi.getScreenshots);
 
-module.exports = router
+module.exports = router;

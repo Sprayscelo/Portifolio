@@ -1,28 +1,81 @@
 <template>
   <div id="pcBuilderAiRoot">
+    <div class="errorMessagesContainer">
+      <alert ref="alert">
+      </alert>
+    </div>
     <div class="pcBuilderAiMainContainer backgroundContainer">
       <h1 class="center">Welcome to pc builder AI</h1>
-      <h2>Please select the games, quality and how much fps you want to run!</h2>
+      <h2>
+        Please select the games, quality and how much fps you want to run!
+      </h2>
       <div v-if="pcConfig.length > 1" class="pagination">
-        <span @click="this.page = index-1" v-for="index in pcConfig.length" :key="index" :class="[this.page === index-1 ? 'pageActive' : '', !loadingPc ? `opacityPcSpecs` : ``]">{{index}}</span>
+        <span
+          @click="this.page = index - 1"
+          v-for="index in pcConfig.length"
+          :key="index"
+          :class="[
+            this.page === index - 1 ? 'pageActive' : '',
+            !loadingPc ? `opacityPcSpecs` : ``,
+          ]"
+          >{{ index }}</span
+        >
       </div>
       <div class="pcSpecsContainer">
         <div id="pcBuilderLogo">
-          <img id="" :src="loadingPc ? loadingPcLogo : pcBuilderLogo" :class="loadingPc ? `loadingPc` : `imgLogoBuilder`" alt="">
+          <img
+            id=""
+            :src="loadingPc ? loadingPcLogo : pcBuilderLogo"
+            :class="loadingPc ? `loadingPc` : `imgLogoBuilder`"
+            alt=""
+          />
           <p v-if="loadingPc" class="">Generating PC for you, please wait...</p>
         </div>
         <ul>
-          <li v-for="pc, key in pcConfig[this.page]" :key="key"><span>{{pc.label ?? pc}}</span> <span :class="[loadingPc ? 'opacityControl' : '', pc.label ?? false ? `animationPcSpecs` : ``]"> {{pc.value ?? '. . .'}} </span> </li>
+          <li v-for="(pc, key) in pcConfig[this.page]" :key="key">
+            <span>{{ pc.label ?? pc }}</span>
+            <span
+              :class="[
+                loadingPc ? 'opacityControl' : '',
+                pc.label ?? false ? `animationPcSpecs` : ``,
+              ]"
+            >
+              {{ pc.value ?? ". . ." }}
+            </span>
+          </li>
         </ul>
       </div>
-      <h3 v-if="pcConfig.length > 1"> You have <span id="pcNumbers"> {{ pcConfig.length }} </span> options </h3>
+      <h3 v-if="pcConfig.length > 1">
+        You have <span id="pcNumbers"> {{ pcConfig.length }} </span> options
+      </h3>
       <div class="configContainer">
         <div class="gameConfigContainer">
           <gamesConfig v-for="game in games" :key="game.id" ref="configs">
-            <svg id="removeGame" @click="removeGame(game.id)" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25">
+            <svg
+              id="removeGame"
+              @click="removeGame(game.id)"
+              xmlns="http://www.w3.org/2000/svg"
+              width="25"
+              height="25"
+              viewBox="0 0 25 25"
+            >
               <rect width="25" height="25" rx="5" ry="5" fill="red" />
-              <line x1="7" y1="7" x2="18" y2="18" stroke="white" stroke-width="3" />
-              <line x1="7" y1="18" x2="18" y2="7" stroke="white" stroke-width="3" />
+              <line
+                x1="7"
+                y1="7"
+                x2="18"
+                y2="18"
+                stroke="white"
+                stroke-width="3"
+              />
+              <line
+                x1="7"
+                y1="18"
+                x2="18"
+                y2="7"
+                stroke="white"
+                stroke-width="3"
+              />
             </svg>
           </gamesConfig>
           <button class="add-button" @click="addGame">
@@ -42,10 +95,20 @@
           </button>
         </div>
         <div class="buttonsContainer">
-          <button v-if="!this.pcConfig[0].processor ?? false" @click=generatePc() class="generatePcButton">
+          <button
+            v-if="!this.pcConfig[0].processor ?? false"
+            @click="generatePc()"
+            class="generatePcButton"
+          >
             Generate PC!
           </button>
-          <button @click="generatePc()" v-if="this.pcConfig[0].processor" class="generatePcButton">Generate new PC!</button>
+          <button
+            @click="generatePc()"
+            v-if="this.pcConfig[0].processor"
+            class="generatePcButton"
+          >
+            Generate new PC!
+          </button>
         </div>
       </div>
     </div>
@@ -53,86 +116,118 @@
 </template>
 
 <script>
-import pcBuilderLogo from '@/static/pc_builder_logo.png'
-import loadingPcLogo from '@/static/loadingPc.jpg'
-
-// import CryptoJS from 'crypto-js';
+import pcBuilderLogo from "@/static/pc_builder_logo.png";
+import loadingPcLogo from "@/static/loadingPc.jpg";
+import alert from "@/components/utilities/alert.vue";
 import axios from "axios";
-// import moment from "moment";
-import gamesConfig from '@/components/pcBuilderAi/gamesConfig.vue'
+
+import gamesConfig from "@/components/pcBuilderAi/gamesConfig.vue";
 
 export default {
-  
   name: "pcBuilderAi",
   data() {
     return {
       token: "",
       tokenExpireTime: null,
       lastRequest: null,
-      games: [{id: 0}],
+      games: [{ id: 0 }],
       pcConfig: [
-            ['Processor: ', 'Ram Memory: ', 'Video card: ', 'Power Supply: ', 'Motherboard: ', 'Obs: '],
+        [
+          "Processor: ",
+          "Ram Memory: ",
+          "Video card: ",
+          "Power Supply: ",
+          "Motherboard: ",
+          "Obs: ",
         ],
+      ],
       page: 0,
       loadingPc: false,
       loadingPcLogo: loadingPcLogo,
-      pcBuilderLogo: pcBuilderLogo
+      pcBuilderLogo: pcBuilderLogo,
+      errorStatus: {
+        code: "",
+        message: "",
+      },
     };
   },
   components: {
     gamesConfig,
+    alert,
   },
   methods: {
-    async callEndPointIgb() {
-      //Always send the same header for this call, dont need to put on the parameter when calling.  
-      try {
-        const response = await axios.post('http://localhost:3000/games', '')
-        console.log(response)
-      }catch(error) {
-        console.log('callEndPoint ERRO: ' + error)
-      }
-    },
-
     addGame() {
-      this.games.push({id:this.games.length})
+      this.games.push({ id: this.games.length });
     },
 
     async generatePc() {
-      let gamesCardsInfos = this.$refs.configs.map((config) => config.getData()).filter(card => card.gameSearched && card.gameFps && card.gameQuality)
-      
-      if(!gamesCardsInfos.length) return alert(`Please fill up at least one card information`)
+      let gamesCardsInfos = this.$refs.configs
+        .map((config) => config.getData())
+        .filter(
+          (card) => card.gameSearched && card.gameFps && card.gameQuality,
+        );
+
+      if (!gamesCardsInfos.length)
+        return alert(`Please fill up at least one card information`);
+
+      this.errorStatus = {};
+
       this.pcConfig = [
-        ['Processor: ', 'Ram Memory: ', 'Video card: ', 'Power Supply: ', 'Motherboard: ', 'Obs: ']
-      ]
-      this.loadingPc = true
-      const responsePcConfigAi = await axios.post('http://localhost:3000/openai', {"gamesConfig": gamesCardsInfos})
-      this.loadingPc = false
-            
-      this.pcConfig = JSON.parse(responsePcConfigAi.data.message.content).pcConfig.map(pc => {
-        pc.processor = {label: `Processor: `, value: pc.processor},
-        pc.ram = {label: `Ram memory: `, value: pc.ram},
-        pc.videoCard = {label: `Video card: `, value: pc.videoCard},
-        pc.powerSupply = {label: `Power Supply: `, value: pc.powerSupply},
-        pc.motherboard = {label: `Motherboard: `, value: pc.motherboard},
-        pc.obs = {label: `Obs: `, value: pc.obs ? pc.obs : '. . .'}
-        return pc
-      })
+        [
+          "Processor: ",
+          "Ram Memory: ",
+          "Video card: ",
+          "Power Supply: ",
+          "Motherboard: ",
+          "Obs: ",
+        ],
+      ];
+      this.loadingPc = true;
+      try {
+        var responsePcConfigAi = await axios.post(
+          "http://localhost:3000/openai",
+          { gamesConfig: gamesCardsInfos },
+        );
+      } catch (error) {
+        this.errorStatus.message = error.data;
+        this.errorStatus.code = error.status;
+        throw error;
+      } finally {
+        this.loadingPc = false;
+      }
+      console.log(responsePcConfigAi.status);
+      //if(responsePcConfigAi.statusCode !== 200) return this.errorMessage =
+      this.pcConfig = JSON.parse(
+        responsePcConfigAi.data.message.content,
+      ).pcConfig.map((pc) => {
+        (pc.processor = { label: `Processor: `, value: pc.processor }),
+          (pc.ram = { label: `Ram memory: `, value: pc.ram }),
+          (pc.videoCard = { label: `Video card: `, value: pc.videoCard }),
+          (pc.powerSupply = { label: `Power Supply: `, value: pc.powerSupply }),
+          (pc.motherboard = { label: `Motherboard: `, value: pc.motherboard }),
+          (pc.obs = { label: `Obs: `, value: pc.obs ? pc.obs : ". . ." });
+        return pc;
+      });
     },
 
     removeGame(id) {
-      this.games = this.games.filter(game => game.id != id)
+      this.games = this.games.filter((game) => game.id != id);
     },
   },
 };
 </script>
-<style scoped lang="scss" name="animations"> 
-
+<style scoped lang="scss" name="animations">
 .opacityControl {
   animation: opc 2s infinite;
 }
 
 .animationPcSpecs {
   animation: opacityPcSpecs 1s ease-in-out;
+}
+
+.animationAlert {
+  animation: alert;
+  animation-duration: 2s;
 }
 
 @keyframes opacityPcSpecs {
@@ -149,11 +244,11 @@ export default {
     opacity: 1;
   }
   50% {
-    opacity: .3;
+    opacity: 0.3;
   }
 }
 
-@keyframes scaleAndFade  {
+@keyframes scaleAndFade {
   100% {
     transform: scale(0.9);
     opacity: 1;
@@ -164,33 +259,65 @@ export default {
   }
 }
 
+@keyframes alert {
+  0% {
+    display: block;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    display: none;
+    opacity: 0;
+  }
+}
+
 .loadingPc {
   animation: scaleAndFade 2s infinite;
 }
 </style>
 <style scoped lang="scss">
-@import '@/static/variables.scss';
-.backgroundContainer{
+@import "@/static/variables.scss";
+
+.errorMessagesContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.backgroundContainer {
   background: hsla(233, 100%, 90%, 1);
 
-  background: linear-gradient(180deg, hsla(233, 100%, 90%, 1) 0%, hsla(0, 0%, 89%, 1) 100%);
+  background: linear-gradient(
+    180deg,
+    hsla(233, 100%, 90%, 1) 0%,
+    hsla(0, 0%, 89%, 1) 100%
+  );
 
-  background: -moz-linear-gradient(180deg, hsla(233, 100%, 90%, 1) 0%, hsla(0, 0%, 89%, 1) 100%);
+  background: -moz-linear-gradient(
+    180deg,
+    hsla(233, 100%, 90%, 1) 0%,
+    hsla(0, 0%, 89%, 1) 100%
+  );
 
-  background: -webkit-linear-gradient(180deg, hsla(233, 100%, 90%, 1) 0%, hsla(0, 0%, 89%, 1) 100%);
-  
+  background: -webkit-linear-gradient(
+    180deg,
+    hsla(233, 100%, 90%, 1) 0%,
+    hsla(0, 0%, 89%, 1) 100%
+  );
+
   border-radius: 15px;
 }
 
-  h1{
-    margin: 5px;
-    font-size: 2em;
-    font-family: 'Rubik Mono One', sans-serif;
-  }
-  h2 {
-    text-align: center;
-    font-size: 1.1rem;
-  }
+h1 {
+  margin: 5px;
+  font-size: 2em;
+  font-family: "Rubik Mono One", sans-serif;
+}
+h2 {
+  text-align: center;
+  font-size: 1.1rem;
+}
 
 .add-button {
   background: white;
@@ -219,17 +346,18 @@ export default {
   gap: 10px;
   justify-content: center;
   margin-bottom: 2em;
-  span{
+  span {
     background-color: $background;
     border-radius: 12px;
     width: 15px;
     padding: 10px;
     text-align: center;
   }
-  span:hover, .pageActive{
+  span:hover,
+  .pageActive {
     background-color: black;
     color: whitesmoke;
-    transition: .3s;
+    transition: 0.3s;
   }
 }
 .pcSpecsContainer {
@@ -240,12 +368,12 @@ export default {
   font-size: 1rem;
   height: 35vh;
   width: 95vw;
-  p{
+  p {
     margin: 0;
     font-size: 1rem;
     font-weight: bolder;
   }
-  ul{
+  ul {
     display: flex;
     flex-direction: column;
     flex-shrink: 1;
@@ -263,11 +391,11 @@ export default {
       margin-right: 5px;
     }
     span:nth-child(2) {
-      font-size: .9em;
+      font-size: 0.9em;
     }
-  } 
+  }
 }
-h3{
+h3 {
   text-align: center;
   text-decoration: underline;
   text-underline-offset: 4px;
@@ -298,74 +426,74 @@ h3{
     border-radius: 10px;
     transform: scale(0.9);
   }
-  p{
-    font-size: .7rem;
+  p {
+    font-size: 0.7rem;
     animation: opc 2s infinite;
   }
 }
 
-#pcBuilderAiRoot{
+#pcBuilderAiRoot {
   margin: 20px;
 }
-  .gameConfigContainer {
-    display: flex;
-    //grid-template-columns: repeat(4, minmax(10%, 1fr));
-    gap: 20px;
-    flex-wrap: wrap;
-    > *:not(button) {
-      flex-grow: 0;
-      flex-shrink: 1;
-      flex-basis: 20%;
-      position: relative;
-      padding: 10px;
-    }
+.gameConfigContainer {
+  display: flex;
+  //grid-template-columns: repeat(4, minmax(10%, 1fr));
+  gap: 20px;
+  flex-wrap: wrap;
+  > *:not(button) {
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-basis: 20%;
+    position: relative;
+    padding: 10px;
   }
+}
 
-  .center{
-    display: grid;
-    place-items: center;
-  }
+.center {
+  display: grid;
+  place-items: center;
+}
 
-  .configContainer {
-    text-align: center;
-    .buttonsContainer {
+.configContainer {
+  text-align: center;
+  .buttonsContainer {
     display: flex;
     gap: 10px;
     justify-content: center;
-      .generatePcButton {
-        margin-top: 20px;
-        padding: 1em;
-        background-color: green;
-        color: whitesmoke;
-        font-weight: bold;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-      .generatePcButton:hover {
-        background-color: black;
-        transition: .3s ease-in-out
-      }
-      .clearButton {
-        opacity: 1;
-        margin-top: 20px;
-        padding: 1em;
-        background-color: red;
-        color: whitesmoke;
-        font-weight: bold;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: opacity 1s ease-out;
-      }
+    .generatePcButton {
+      margin-top: 20px;
+      padding: 1em;
+      background-color: green;
+      color: whitesmoke;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .generatePcButton:hover {
+      background-color: black;
+      transition: 0.3s ease-in-out;
+    }
+    .clearButton {
+      opacity: 1;
+      margin-top: 20px;
+      padding: 1em;
+      background-color: red;
+      color: whitesmoke;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: opacity 1s ease-out;
     }
   }
-   #removeGame{
-    display: inline-block;
-    vertical-align: middle;
-    text-align: end;
-    margin-bottom: 0.5em;
-    margin-right: 10px;
-    cursor: pointer;
-  }
+}
+#removeGame {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: end;
+  margin-bottom: 0.5em;
+  margin-right: 10px;
+  cursor: pointer;
+}
 </style>
