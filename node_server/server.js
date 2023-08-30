@@ -3,7 +3,9 @@ const gamesRoutes = require("./routes/gamesRoutes");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const openAiRoutes = require("./routes/openAi");
-const checkVpn = require(`./services/checkVpn.js`);
+import { inject } from `@vercel/analytics`
+
+inject()
 
 require("dotenv").config();
 
@@ -11,7 +13,6 @@ async function startServer() {
   const app = express();
 
   app.use(cors());
-  //app.use(checkIp);
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
