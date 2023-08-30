@@ -28,7 +28,7 @@
                 :src="item.url"
                 alt=""
               />
-              <img v-else :src="noUrlImage" alt="" />
+              <img v-else :src="noUrlFounded" alt="" />
               <li @click="selectGame(item.name)">{{ item.name }}</li>
             </ul>
           </div>
@@ -81,12 +81,12 @@ export default {
         const response = await axios.post(
           `http://localhost:3000/${endpoint}`,
           query,
-          { headers: { "Content-Type": "text/plain" } },
+          { headers: { "Content-Type": "text/plain" } }
         );
         return response.data;
       } catch (error) {
         console.log(
-          `Erro on endpoint calling - Endpoint: ${endpoint} / Erro: ${error}`,
+          `Erro on endpoint calling - Endpoint: ${endpoint} / Erro: ${error}`
         );
         throw error;
       }
@@ -117,7 +117,7 @@ export default {
         try {
           const gamesData = await this.searchGames(
             "games",
-            `fields name, artworks; where platforms = (6) & name ~ *"${nv}"*;`,
+            `fields name, artworks; where platforms = (6) & name ~ *"${nv}"*;`
           );
           const screenShotsIds = gamesData
             .map((art) => (art?.artworks ? art.artworks[0] : null))
@@ -125,7 +125,7 @@ export default {
           if (screenShotsIds.length) {
             const result = await this.searchGames(
               "artworks",
-              `fields url, game; where id = (${screenShotsIds.join(",")});`,
+              `fields url, game; where id = (${screenShotsIds.join(",")});`
             );
             gamesData.map((element) => {
               element.url =
@@ -134,7 +134,6 @@ export default {
             });
           }
           this.gamesFounded = gamesData;
-          console.log(gamesData);
         } catch (error) {
           console.log("Erro ao pesquisar jogos:", error);
         }

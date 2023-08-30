@@ -132,6 +132,7 @@ $color-map: (
   display: none;
   position: fixed;
   width: 50vw;
+  min-width: fit-content;
   background-color: #eeeeee;
   border-radius: 0px 5px;
   box-shadow: 0px 0px 30px -10px;
@@ -146,8 +147,6 @@ $color-map: (
       justify-content: center;
       border-radius: 5px 0px 0px 0px;
       align-items: center;
-      //color: #DF5D5B;
-      //background-color: #3D1D1E;
       width: 100px;
       min-height: 82px;
       .material-symbols-outlined {
@@ -167,17 +166,18 @@ $color-map: (
       p {
         position: relative;
         margin-left: 2rem;
-        width: 100%;
+        margin-right: 2rem;
+        width: max-content;
         font-style: italic;
         font-weight: bold;
       }
       p::after {
         content: "";
-        width: 90%;
+        width: 100%;
+        min-width: fit-content;
         height: 4px;
         margin-top: 1.4rem;
         border-radius: 0px 5px 0px 5px;
-        //background-color: red;
         position: absolute;
         left: 0;
         bottom: -50%;

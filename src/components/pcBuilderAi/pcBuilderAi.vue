@@ -168,7 +168,7 @@ export default {
         );
 
       if (!gamesCardsInfos.length)
-        return alert(`Please fill up at least one card information`);
+        return this.$refs.alert.alert(`Please fill up at least one card information`, 'warning');
 
       this.errorStatus = {};
 
@@ -191,6 +191,8 @@ export default {
       } catch (error) {
         this.errorStatus.message = error.data;
         this.errorStatus.code = error.status;
+        console.log(error)
+        this.$refs.alert.alert(`${error.response.data}`, 'warning')
         throw error;
       } finally {
         this.loadingPc = false;
