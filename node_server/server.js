@@ -3,9 +3,6 @@ const gamesRoutes = require("./routes/gamesRoutes");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const openAiRoutes = require("./routes/openAi");
-import { inject } from `@vercel/analytics`
-
-inject()
 
 require("dotenv").config();
 
