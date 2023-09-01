@@ -79,7 +79,7 @@ export default {
       //Always send the same header for this call, dont need to put on the parameter when calling.
       try {
         const response = await axios.post(
-          `http://localhost:3000/${endpoint}`,
+          `${process.env.VUE_APP_BACKEND_URL}/${endpoint}`,
           query,
           { headers: { "Content-Type": "text/plain" } }
         );

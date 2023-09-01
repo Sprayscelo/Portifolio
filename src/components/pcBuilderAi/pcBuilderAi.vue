@@ -185,7 +185,7 @@ export default {
       this.loadingPc = true;
       try {
         var responsePcConfigAi = await axios.post(
-          "http://localhost:3000/openai",
+          `${process.env.VUE_APP_BACKEND_URL}/openai`,
           { gamesConfig: gamesCardsInfos },
         );
       } catch (error) {
