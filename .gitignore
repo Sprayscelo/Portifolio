@@ -1,6 +1,6 @@
-.DS_Store
 frontend/node_modules
 backend/node_modules
+.DS_Store
 frontend/dist
 frontend/.env
 backend/.env
