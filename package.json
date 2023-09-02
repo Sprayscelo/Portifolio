@@ -1,0 +1,20 @@
+{
+  "name": "portifolio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "cd frontend && npm run build && cd ../backend && vercel --prod"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sprayscelo/Portifolio.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sprayscelo/Portifolio/issues"
+  },
+  "homepage": "https://github.com/Sprayscelo/Portifolio#readme"
+}
