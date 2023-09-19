@@ -8,7 +8,9 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "lint:check": "prettier --check .",
-    "lint:fix": "prettier --write ."
+    "lint:fix": "prettier --write .",
+    "deploy-frontend": "cd frontend && npm run build && vercel --prod",
+    "deploy-backend": "cd backend && vercel --prod"
   },
   "dependencies": {
     "@vercel/analytics": "^1.0.2",
