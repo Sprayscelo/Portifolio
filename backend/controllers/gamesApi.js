@@ -16,11 +16,11 @@ exports.getGames = async (req, res, next) => {
           "Client-ID": process.env.TWITCH_CLIENT_ID,
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
     res.json(response.data);
   } catch (erro) {
     console.error(erro);
-    res.status(500).json({ error: "Erro ao buscar os jogos." });
+    res.status(500).json({ error: `Erro ao buscar os jogos: ${erro}` });
   }
 };

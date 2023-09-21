@@ -78,6 +78,7 @@ export default {
     async searchGames(endpoint, query) {
       //Always send the same header for this call, dont need to put on the parameter when calling.
       try {
+        console.log(process.env.VUE_APP_BACKEND_URL);
         const response = await axios.post(
           `${process.env.VUE_APP_BACKEND_URL}/api/${endpoint}`,
           query,
