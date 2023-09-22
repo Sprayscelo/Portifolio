@@ -16,7 +16,7 @@ async function startServer() {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.text());
 
-  app.use("/api", gamesRoutes);
+  app.use("/api", apiRoutes);
 
   app.listen(process.env.port || 3000);
 
