@@ -1,8 +1,7 @@
 <template>
   <div id="pcBuilderAiRoot">
     <div class="errorMessagesContainer">
-      <alert ref="alert">
-      </alert>
+      <alert ref="alert"> </alert>
     </div>
     <div class="pcBuilderAiMainContainer backgroundContainer">
       <h1 class="center">Welcome to pc builder AI</h1>
@@ -164,11 +163,14 @@ export default {
       let gamesCardsInfos = this.$refs.configs
         .map((config) => config.getData())
         .filter(
-          (card) => card.gameSearched && card.gameFps && card.gameQuality,
+          (card) => card.gameSearched && card.gameFps && card.gameQuality
         );
 
       if (!gamesCardsInfos.length)
-        return this.$refs.alert.alert(`Please fill up at least one card information`, 'warning');
+        return this.$refs.alert.alert(
+          `Please fill up at least one card information`,
+          "warning"
+        );
 
       this.errorStatus = {};
 
@@ -185,14 +187,14 @@ export default {
       this.loadingPc = true;
       try {
         var responsePcConfigAi = await axios.post(
-          `${process.env.VUE_APP_BACKEND_URL}/openai`,
-          { gamesConfig: gamesCardsInfos },
+          `${process.env.VUE_APP_BACKEND_URL}/api/openai`,
+          { gamesConfig: gamesCardsInfos }
         );
       } catch (error) {
         this.errorStatus.message = error.data;
         this.errorStatus.code = error.status;
-        console.log(error)
-        this.$refs.alert.alert(`${error.response.data}`, 'warning')
+        console.log(error);
+        this.$refs.alert.alert(`${error.response.data}`, "warning");
         throw error;
       } finally {
         this.loadingPc = false;
@@ -200,7 +202,7 @@ export default {
       console.log(responsePcConfigAi.status);
       //if(responsePcConfigAi.statusCode !== 200) return this.errorMessage =
       this.pcConfig = JSON.parse(
-        responsePcConfigAi.data.message.content,
+        responsePcConfigAi.data.message.content
       ).pcConfig.map((pc) => {
         (pc.processor = { label: `Processor: `, value: pc.processor }),
           (pc.ram = { label: `Ram memory: `, value: pc.ram }),
