@@ -1,8 +1,6 @@
 const express = require("express");
-const gamesRoutes = require("./routes/gamesRoutes");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const openAiRoutes = require("./routes/openAi");
 const apiRoutes = require("./routes/apiRoutes");
 
 require("dotenv").config();

@@ -6,14 +6,14 @@ require("dotenv").config();
 const BASE_URL = "https://api.openai.com/v1/chat/completions";
 
 exports.generatePc = async (req, res) => {
-  if (await checkVpn.checkVpn())
+  if (await checkVpn(req.ip))
     return res
       .status(406)
       .send(`Please disable you VPN or PROXY to make the request`);
   const gamesConfig = req.body.gamesConfig
     .map(
       (card) =>
-        `Jogo: ${card.gameSearched}\nFPS: ${card.gameFps}\nQualidade de grafico${card.gameQuality}\n`,
+        `Jogo: ${card.gameSearched}\nFPS: ${card.gameFps}\nQualidade de grafico${card.gameQuality}\n`
     )
     .join(`\n`);
   try {
@@ -36,7 +36,7 @@ exports.generatePc = async (req, res) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.OPENAI_APIKEY}`,
         },
-      },
+      }
     );
     res.json(sendToChatGpt.data.choices[0]);
   } catch (error) {
