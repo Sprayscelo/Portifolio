@@ -5,11 +5,10 @@ const apiRoutes = require("./routes/apiRoutes");
 
 require("dotenv").config();
 
-app.set("trust proxy", true);
-
 async function startServer() {
   const app = express();
 
+  app.set("trust proxy", true);
   app.use(cors());
 
   app.use(bodyParser.json());
