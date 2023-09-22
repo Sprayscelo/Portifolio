@@ -5,6 +5,8 @@ const apiRoutes = require("./routes/apiRoutes");
 
 require("dotenv").config();
 
+app.set("trust proxy", true);
+
 async function startServer() {
   const app = express();
 
