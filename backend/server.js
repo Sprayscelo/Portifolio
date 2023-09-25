@@ -8,7 +8,7 @@ require("dotenv").config();
 async function startServer() {
   const app = express();
 
-  app.set("trust proxy", true);
+  //app.set("trust proxy", true);
   app.use(cors());
 
   app.use(bodyParser.json());
@@ -17,7 +17,7 @@ async function startServer() {
 
   app.use("/api", apiRoutes);
 
-  app.listen(process.env.port || 3000);
+  app.listen(process.env.PORT || 3000);
 
   console.log(`Server rodando`);
 }
