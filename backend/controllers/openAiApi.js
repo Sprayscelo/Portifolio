@@ -6,7 +6,8 @@ require("dotenv").config();
 const BASE_URL = "https://api.openai.com/v1/chat/completions";
 
 exports.generatePc = async (req, res) => {
-  let ip = req.ip.split(":").pop();
+  //let ip = req.ip.split(":").pop();
+  let ip = "181.223.185.240";
   if (await checkVpn(ip))
     return res
       .status(406)

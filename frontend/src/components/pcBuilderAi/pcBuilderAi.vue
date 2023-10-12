@@ -49,7 +49,12 @@
       </h3>
       <div class="configContainer">
         <div class="gameConfigContainer">
-          <gamesConfig v-for="game in games" :key="game.id" ref="configs">
+          <gamesConfig
+            v-for="game in games"
+            :key="game.id"
+            ref="configs"
+            :gamesConfig="game"
+          >
             <svg
               id="removeGame"
               @click="removeGame(game.id)"
@@ -108,9 +113,36 @@
           >
             Generate new PC!
           </button>
+          <div id="saveLocalContainer">
+            <button @click="saveLayout" class="btnSavePcLocal">
+              Save PC (Local)
+            </button>
+            <input
+              placeholder="Type layout name here..."
+              type="text"
+              v-model="layoutName"
+            />
+          </div>
         </div>
       </div>
     </div>
+    <hr />
+    <section class="layoutContainer" name="layoutContainer">
+      <h3>My saved layouts</h3>
+      <div id="layoutComponent">
+        <layouts
+          v-for="layout in layouts"
+          :layout="layout"
+          :key="layout.name"
+          @layoutConfig="receiveLayouts"
+          @deletedLayout="deletedLayoutReceiver"
+          @alert="callAlert"
+        ></layouts>
+      </div>
+      <div v-if="!layouts.length" style="text-align: center">
+        <p>You dont have any layouts yet...</p>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -119,8 +151,8 @@ import pcBuilderLogo from "@/static/pc_builder_logo.png";
 import loadingPcLogo from "@/static/loadingPc.jpg";
 import alert from "@/components/utilities/alert.vue";
 import axios from "axios";
-
 import gamesConfig from "@/components/pcBuilderAi/gamesConfig.vue";
+import layouts from "@/components/pcBuilderAi/layouts.vue";
 
 export default {
   name: "pcBuilderAi",
@@ -148,12 +180,19 @@ export default {
         code: "",
         message: "",
       },
+      layouts: JSON.parse(localStorage.getItem(`layouts`)) ?? ``,
+      layoutName: "",
     };
   },
   components: {
     gamesConfig,
     alert,
+    layouts,
   },
+  onUpdate() {
+    this.layouts = JSON.parse(localStorage.getItem(`layouts`)) ?? ``;
+  },
+
   methods: {
     addGame() {
       this.games.push({ id: this.games.length });
@@ -165,7 +204,7 @@ export default {
         .filter(
           (card) => card.gameSearched && card.gameFps && card.gameQuality
         );
-
+      this.games = gamesCardsInfos;
       if (!gamesCardsInfos.length)
         return this.$refs.alert.alert(
           `Please fill up at least one card information`,
@@ -193,13 +232,11 @@ export default {
       } catch (error) {
         this.errorStatus.message = error.data;
         this.errorStatus.code = error.status;
-        console.log(error);
         this.$refs.alert.alert(`${error.response.data}`, "warning");
         throw error;
       } finally {
         this.loadingPc = false;
       }
-      console.log(responsePcConfigAi.status);
       //if(responsePcConfigAi.statusCode !== 200) return this.errorMessage =
       this.pcConfig = JSON.parse(
         responsePcConfigAi.data.message.content
@@ -212,10 +249,68 @@ export default {
           (pc.obs = { label: `Obs: `, value: pc.obs ? pc.obs : ". . ." });
         return pc;
       });
+      console.log(this.pcConfig);
+    },
+
+    saveLayout() {
+      if (!this.layoutName)
+        return this.$refs.alert.alert(
+          "Please fill up the layout name",
+          "warning"
+        );
+      if (this.pcConfig.length === 1)
+        return this.$refs.alert.alert(
+          "Generate your pc first to save the layout",
+          "warning"
+        );
+      let layouts = [
+        {
+          name: this.layoutName,
+          pcConfig: this.pcConfig,
+          games: this.games,
+        },
+      ];
+      if (localStorage.getItem("layouts")) {
+        let layoutsStorage = JSON.parse(localStorage.getItem("layouts"));
+        let layoutNames = layoutsStorage.map((names) => names.name);
+        if (layoutNames.includes(this.layoutName))
+          return this.$refs.alert.alert(
+            "You cannot add a layout of the same name!",
+            "error"
+          );
+        // Update layouts at local storage
+        localStorage.setItem(
+          "layouts",
+          JSON.stringify([...layoutsStorage, ...layouts])
+        );
+      } else {
+        localStorage.setItem("layouts", JSON.stringify(layouts));
+      }
+      this.$refs.alert.alert(
+        `Layout ${this.layoutName.toUpperCase()} was added successfully`,
+        `success`
+      );
+      this.layouts = JSON.parse(localStorage.getItem(`layouts`));
+      this.layoutName = "";
+      console.log(localStorage.getItem("layouts"));
     },
 
     removeGame(id) {
       this.games = this.games.filter((game) => game.id != id);
+    },
+
+    // Layouts functions
+    receiveLayouts(layoutConfigs) {
+      this.pcConfig = layoutConfigs.pcConfig;
+      this.games = layoutConfigs.games;
+    },
+
+    deletedLayoutReceiver(layout) {
+      this.layouts = layout;
+    },
+
+    callAlert(content) {
+      this.$refs.alert.alert(content.message, content.type);
     },
   },
 };
@@ -323,6 +418,13 @@ h2 {
   font-size: 1.1rem;
 }
 
+h3 {
+  margin: 5px;
+  margin-bottom: 2rem;
+  font-family: "Rubik Mono One", sans-serif;
+  text-decoration-line: none;
+}
+
 .add-button {
   background: white;
   border: 2px solid hsl(0, 0%, 0%, 30%);
@@ -401,8 +503,6 @@ h2 {
 }
 h3 {
   text-align: center;
-  text-decoration: underline;
-  text-underline-offset: 4px;
   font-size: large;
 }
 #pcBuilderLogo {
@@ -462,8 +562,10 @@ h3 {
   text-align: center;
   .buttonsContainer {
     display: flex;
+    flex-direction: column;
     gap: 10px;
     justify-content: center;
+    align-items: center;
     .generatePcButton {
       margin-top: 20px;
       padding: 1em;
@@ -471,6 +573,7 @@ h3 {
       color: whitesmoke;
       font-weight: bold;
       border: none;
+      width: fit-content;
       border-radius: 5px;
       cursor: pointer;
     }
@@ -499,5 +602,49 @@ h3 {
   margin-bottom: 0.5em;
   margin-right: 10px;
   cursor: pointer;
+}
+
+hr {
+  margin-top: 2rem;
+  border: solid 1px;
+  box-shadow: rgb(255, 255, 255) 0px 1px 10px 2px;
+}
+
+// layout styles from here
+
+#saveLocalContainer {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  .btnSavePcLocal {
+    padding: 0.8em;
+    background-color: black;
+    color: white;
+    font-weight: 500;
+    border: none;
+    border-radius: 5px;
+    font-family: "Varela Round", sans-serif;
+    cursor: pointer;
+  }
+  input {
+    border-radius: 5px;
+    border: none;
+    text-indent: 8%;
+    font-weight: 500;
+  }
+  input:focus {
+    outline: none;
+  }
+}
+
+.layoutContainer {
+  margin-top: 2rem;
+}
+
+#layoutComponent {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 </style>

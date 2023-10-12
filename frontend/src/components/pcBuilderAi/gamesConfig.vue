@@ -66,14 +66,17 @@ export default {
   name: "gamesConfig",
   data() {
     return {
-      gameSearched: "",
+      gameSearched: this.gamesConfig.gameSearched ?? "",
       gamesFounded: "",
-      gameFps: "",
-      gameQuality: "Low",
+      gameFps: this.gamesConfig.gameFps ?? "",
+      gameQuality: this.gamesConfig.gameQuality ?? "Low",
       noUrlFounded: nourl,
     };
   },
-  components: {},
+  mounted() {
+    //console.log(this.$props.gamesConfig);
+  },
+  props: ["gamesConfig"],
   methods: {
     async searchGames(endpoint, query) {
       //Always send the same header for this call, dont need to put on the parameter when calling.
