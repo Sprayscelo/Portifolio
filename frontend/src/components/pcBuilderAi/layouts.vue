@@ -1,7 +1,7 @@
 <template>
   <div id="layoutRoot">
     <section name="Show layouts" class="layoutsContainer">
-      <div class="layoutCards-bw" @click="loadLayout()">
+      <div :class="[`layoutCards-bw`, this.loaded]" @click="loadLayout()">
         <span v-if="!this.editMode">{{ layout.name }}</span>
         <input
           @input="limitCharacter(18, `newLayoutName`)"
@@ -13,7 +13,6 @@
           <div v-if="this.editMode">
             <span
               @click="editLayoutName(this.layout.name)"
-              @keyPress="editLayoutName(this.layout.name)"
               class="material-symbols-outlined"
               type="submit"
             >
@@ -27,7 +26,10 @@
             </span>
           </div>
           <span
-            @click="this.editMode = true"
+            @click="
+              this.editMode = true;
+              this.newLayoutName = this.layout.name;
+            "
             v-if="!this.editMode"
             class="material-symbols-outlined"
           >
@@ -55,7 +57,7 @@ export default {
     };
   },
 
-  props: ["layout"],
+  props: ["layout", "loaded"],
   methods: {
     loadLayout() {
       let getLayout = JSON.parse(localStorage.getItem(`layouts`)).find(
@@ -69,15 +71,24 @@ export default {
     },
 
     editLayoutName(name, action = true) {
-      console.log(name, action);
       if (action === false) return (this.editMode = false); // this.$emit("editEvent", false),;
+      if (
+        JSON.parse(localStorage.getItem(`layouts`))
+          .map((layout) => layout.name)
+          .includes(this.newLayoutName)
+      )
+        return this.$emit(`alert`, {
+          message: `You cannot have layouts of the same name!`,
+          type: `warning`,
+        });
+
       const layout = this.layout;
       layout.name = this.newLayoutName;
       const getLayouts = JSON.parse(localStorage.getItem(`layouts`)).filter(
         (layout) => layout.name !== name
       );
       localStorage.setItem("layouts", JSON.stringify([...getLayouts, layout]));
-      //this.$emit("editEvent", false);
+      this.editMode = false;
     },
 
     deleteLayout(name) {
@@ -88,7 +99,6 @@ export default {
     },
 
     limitCharacter(limitNumber, key) {
-      console.log(this[key].length, limitNumber);
       if (+this[key].length >= +limitNumber) {
         console.log("entrou aqui");
         this.$emit("alert", {
@@ -166,7 +176,8 @@ export default {
 
 .layoutCards-bw:hover,
 .layoutCards-bw:focus-within,
-.layoutCards-bw:has(input) {
+.layoutCards-bw:has(input),
+.loaded {
   background-color: #08090a;
   color: white;
   transition: all 0.6s ease;

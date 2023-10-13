@@ -134,6 +134,7 @@
           v-for="layout in layouts"
           :layout="layout"
           :key="layout.id"
+          :loaded="loadedLayout == layout.name ? `loaded` : ``"
           @layoutConfig="receiveLayouts"
           @deletedLayout="deletedLayoutReceiver"
           @alert="callAlert"
@@ -182,6 +183,7 @@ export default {
       },
       layouts: JSON.parse(localStorage.getItem(`layouts`)) ?? ``,
       layoutName: "",
+      loadedLayout: ``,
     };
   },
   components: {
@@ -302,6 +304,7 @@ export default {
     receiveLayouts(layoutConfigs) {
       this.pcConfig = layoutConfigs.pcConfig;
       this.games = layoutConfigs.games;
+      this.loadedLayout = layoutConfigs.name;
     },
 
     deletedLayoutReceiver(layout) {
