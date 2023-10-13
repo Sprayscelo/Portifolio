@@ -20,6 +20,12 @@
         cards and generate your PC.
       </p>
       <p>
+        You can also save the generated PC along with the selected games. This
+        storage is done directly in the browser, so please be aware that if you
+        saved a 'layout' on one machine, you won't be able to see it on another
+        machine
+      </p>
+      <p>
         <strong
           >Remember: The more games you add to the list, the longer it might
           take for your computer's configuration to be generated!</strong
