@@ -133,7 +133,7 @@
         <layouts
           v-for="layout in layouts"
           :layout="layout"
-          :key="layout.name"
+          :key="layout.id"
           @layoutConfig="receiveLayouts"
           @deletedLayout="deletedLayoutReceiver"
           @alert="callAlert"
@@ -161,7 +161,7 @@ export default {
       token: "",
       tokenExpireTime: null,
       lastRequest: null,
-      games: [{ id: 0 }],
+      games: [{}],
       pcConfig: [
         [
           "Processor: ",
@@ -189,7 +189,8 @@ export default {
     alert,
     layouts,
   },
-  onUpdate() {
+
+  mounted() {
     this.layouts = JSON.parse(localStorage.getItem(`layouts`)) ?? ``;
   },
 
@@ -211,8 +212,6 @@ export default {
           "warning"
         );
 
-      this.errorStatus = {};
-
       this.pcConfig = [
         [
           "Processor: ",
@@ -230,8 +229,6 @@ export default {
           { gamesConfig: gamesCardsInfos }
         );
       } catch (error) {
-        this.errorStatus.message = error.data;
-        this.errorStatus.code = error.status;
         this.$refs.alert.alert(`${error.response.data}`, "warning");
         throw error;
       } finally {
@@ -267,7 +264,10 @@ export default {
         {
           name: this.layoutName,
           pcConfig: this.pcConfig,
-          games: this.games,
+          games: this.games.map((element, index) => {
+            element.id = index;
+            return element;
+          }),
         },
       ];
       if (localStorage.getItem("layouts")) {
@@ -292,7 +292,6 @@ export default {
       );
       this.layouts = JSON.parse(localStorage.getItem(`layouts`));
       this.layoutName = "";
-      console.log(localStorage.getItem("layouts"));
     },
 
     removeGame(id) {
@@ -327,6 +326,7 @@ export default {
 .animationAlert {
   animation: alert;
   animation-duration: 2s;
+  z-index: 2;
 }
 
 @keyframes opacityPcSpecs {

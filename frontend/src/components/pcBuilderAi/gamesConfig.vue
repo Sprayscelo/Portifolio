@@ -73,9 +73,6 @@ export default {
       noUrlFounded: nourl,
     };
   },
-  mounted() {
-    //console.log(this.$props.gamesConfig);
-  },
   props: ["gamesConfig"],
   methods: {
     async searchGames(endpoint, query) {

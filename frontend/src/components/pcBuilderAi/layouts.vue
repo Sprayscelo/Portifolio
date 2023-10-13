@@ -1,7 +1,7 @@
 <template>
   <div id="layoutRoot">
     <section name="Show layouts" class="layoutsContainer">
-      <div class="layoutCards-bw" @click="loadLayout(layout.name)">
+      <div class="layoutCards-bw" @click="loadLayout()">
         <span v-if="!this.editMode">{{ layout.name }}</span>
         <input
           @input="limitCharacter(18, `newLayoutName`)"
@@ -57,11 +57,14 @@ export default {
 
   props: ["layout"],
   methods: {
-    loadLayout(name) {
+    loadLayout() {
+      let getLayout = JSON.parse(localStorage.getItem(`layouts`)).find(
+        (lay) => this.layout.name === lay.name
+      );
       this.$emit("layoutConfig", {
-        name: name,
-        pcConfig: this.layout.pcConfig,
-        games: this.layout.games,
+        name: getLayout.name,
+        pcConfig: getLayout.pcConfig,
+        games: getLayout.games,
       });
     },
 

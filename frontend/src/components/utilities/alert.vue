@@ -137,6 +137,7 @@ $color-map: (
   border-radius: 0px 5px;
   box-shadow: 0px 0px 30px -10px;
   opacity: 0;
+  z-index: 3;
   .alertContainer {
     display: flex;
     position: relative;
